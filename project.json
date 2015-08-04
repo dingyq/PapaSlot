@@ -1,0 +1,36 @@
+{
+    "project_type": "javascript",
+
+    "debugMode" : 0,
+    "showFPS" : false,
+    "frameRate" : 30,
+    "id" : "gameCanvas",
+    "renderMode" : 0,
+    "engineDir":"frameworks/cocos2d-html5",
+
+    "modules" : ["custom"],
+
+    "jsList" : [
+        "src/resource.js",
+
+        "src/Config/globalValue.js",
+
+        "src/Model/Point.js",
+        "src/Model/PapaSlotUser.js",
+        "src/Model/GameBasicData.js",
+        "src/Model/CardPropertyData.js",
+        "src/Model/CardsProbabilityModel.js",
+
+        "src/Utils/js-signals.js",
+        "src/Utils/UpdateUIManager.js",
+        "src/Utils/LocalStorage.js",
+        "src/Utils/Helper.js",
+
+        "src/View/BaseLayer.js",
+        "src/View/ScrollSelector.js",
+        "src/View/SlotRollerLayer.js",
+        "src/View/GameMainLayer.js",
+
+        "src/Controller/GameMainController.js"
+    ]
+}
