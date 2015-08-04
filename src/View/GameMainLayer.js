@@ -69,9 +69,9 @@ var GameMainLayer = BaseLayer.extend({
         bgLayer.addChild(freeChanceLabel);
         this._freeChanceLabel = freeChanceLabel;
 
-        var button = new ccui.Button(res.SlotBeginBtnNor, res.SlotBeginBtnNor);
-        //var button = new ccui.Button(res.CloseBtnNor, res.CloseBtnSel);
-        //button.setScale(2);
+        //var button = new ccui.Button(res.SlotBeginBtnNor, res.SlotBeginBtnNor);
+        var button = new ccui.Button(res.CloseBtnNor, res.CloseBtnSel);
+        button.setScale(2);
         button.setPosition(this._cSize.width/2, this._slotRoller.y - 100);
         button.addTouchEventListener(this.handTouchHandler, this);
         this.addChild(button);
