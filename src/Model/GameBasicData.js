@@ -14,6 +14,7 @@ var GameBasicData = cc.Class.extend({
     _numSegmentAssistant:null,
     _baseNum:10000,
     _linesArr:null,
+    _cardJMaxAppear:1,
 
     ctor:function(){5
 
@@ -29,6 +30,7 @@ var GameBasicData = cc.Class.extend({
             [0.150, 0.130, 0.130, 0.110, 0.100, 0.090, 0.070, 0.060, 0.050, 0.020, 0.090],
             [0.160, 0.130, 0.130, 0.110, 0.100, 0.080, 0.070, 0.060, 0.030, 0.030, 0.100],
             [0.150, 0.130, 0.130, 0.110, 0.100, 0.080, 0.070, 0.060, 0.050, 0.030, 0.090],
+            [0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.999, 0.001],
         ];
 
         this._nameValueList = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
@@ -36,7 +38,7 @@ var GameBasicData = cc.Class.extend({
 
         var valueArr = this._typeValue;
         this._typeList = {A:valueArr[0], B:valueArr[1], C:valueArr[2], D:valueArr[3], E:valueArr[4], F:valueArr[5], G:valueArr[6], H:valueArr[7], I:valueArr[8], J:valueArr[9], K:valueArr[10]};
-        this._dataIndex = 1;
+        this._dataIndex = 9;
         this._typeCount = this._typeValue.length;
 
         this._linesArr = [
@@ -152,20 +154,30 @@ var GameBasicData = cc.Class.extend({
         }
 
         var prizePak = [];
+        var cardJMaxAppear = this._cardJMaxAppear;
+        cc.log("this._linesArr.length is "+this._linesArr.length);
         for (var k = 0; k < this._linesArr.length; k++) {
             var targetArr = convertArr[k];
             for(var i = 0; i < targetArr.length; i ++){
                 var letter = targetArr[i];
                 var cardType = CardPropertyData.countCardType(letter);
                 var appearCount = 1;
+                var cardJAppear = 0;
                 for(var j = i+1; j < targetArr.length; j ++){
                     var nextLetter = targetArr[j];
+                    // 当下一个card类型与目标字母相同或下一个字母为万能字母时，则目标字母的出现次数自动加1；
+                    // 当出现类似AAAJJ组合时，下边会筛选出JJ作为中奖组合，每条线上只取最高赔率作为一次中奖组合。
                     var nextCardType = CardPropertyData.countCardType(nextLetter);
-                    if ((targetArr[j] == letter)||(nextCardType.isPowerful)){
-                        // 当下一个card类型与目标字母相同或下一个字母为万能字母时，则目标字母的出现次数自动加1；
-                        // 当出现类似AAAJJ组合时，下边会筛选出JJ作为中奖组合，每条线上只取最高赔率作为一次中奖组合。
-                        appearCount ++;
+
+                    if((nextCardType.isPowerful) && (cardJAppear < cardJMaxAppear)) {
+                        cardJAppear++;
+                        appearCount++;
+                    } else {
+                        if (nextLetter == letter){
+                            appearCount ++;
+                        }
                     }
+
                 }
 
                 var baseMultiple = 0;
@@ -189,28 +201,26 @@ var GameBasicData = cc.Class.extend({
 
                 if(baseMultiple > 0){
                     var noExist = true;
-                    for(var ii = 0; ii < prizePak.length; ii ++){
-                        var prizeObj = prizePak[ii];
-                        if(prizeObj.cardTypeFlag == letter){
+                    if (prizePak.length > 0) {
+                        var lastPrizeObj = prizePak[prizePak.length - 1];
+                        if((lastPrizeObj.cardTypeFlag == letter) && (parseInt(lastPrizeObj.line) == k)){
                             //如果这条线上这个标识之前被计算过一次。则不列入中奖。例如AAAAA，不筛选则会出现AAAAA，AAAA，AAA的中奖组合；
                             noExist = false;
                         }
                     }
+
                     if(noExist){
-                        if (prizePak.length > 1) {
+                        // 两个万能替换时需要筛选；
+                        // 一个万能替换时无需筛选，可出现一条线上出现两种中奖可能；
+                        if ((prizePak.length > 0) && (cardJMaxAppear >= 2)) {
                             //如果此条线上出现这种组合AAAII，则只计算II的作为中奖组合(取最大翻倍率作为中奖)；
                             var lastPrizeObj = prizePak[prizePak.length - 1];
                             if((parseInt(lastPrizeObj.line) == k) && (lastPrizeObj.multiple < baseMultiple)){
                                 prizePak.pop();
                             }
                         }
-                        if(cardType.isFree) {
-                            var prizeObj = {cardTypeFlag:letter, multiple:baseMultiple, line:k, appearTimes:appearCount};
-                            prizePak.push(prizeObj);
-                        } else {
-                            var prizeObj = {cardTypeFlag:letter, multiple:baseMultiple, line:k, appearTimes:appearCount};
-                            prizePak.push(prizeObj);
-                        }
+                        var prizeObj = {cardTypeFlag:letter, multiple:baseMultiple, line:k, appearTimes:appearCount};
+                        prizePak.push(prizeObj);
                     }
 
                 }

@@ -14,7 +14,12 @@ var PapaSlotUser = cc.Class.extend({
         this._gameMoney = LocalStorage.getInstance().getGameMoneyBalance() || 1000000;
         this._perLinePrice = 1000;
         this._lastWinMoney = 0;
-        this._freeChance = 0;
+        if(LocalStorage.getInstance().getGameFreeChance() == undefined) {
+            this._freeChance = 0;
+        } else {
+            this._freeChance = LocalStorage.getInstance().getGameFreeChance();
+        }
+
         this._winLineArr = new Array();
 
         return true;
@@ -46,7 +51,8 @@ var PapaSlotUser = cc.Class.extend({
     },
 
     setFreeChance:function(freeChance){
-        this._freeChance = this._freeChance + freeChance;
+        this._freeChance = parseInt(this._freeChance) + parseInt(freeChance);
+        LocalStorage.getInstance().setGameFreeChance(this._freeChance);
     },
 
     getFreeChance:function(){

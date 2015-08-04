@@ -15,6 +15,7 @@ var LocalStorage = cc.Class.extend({
         sound: "sound_switch",
         isfreshhand: "is_fresh_hand",
         gamemoney:"game_money",
+        freechance:"free_chance"
     },
 
     init: function () {
@@ -22,6 +23,13 @@ var LocalStorage = cc.Class.extend({
         return true;
     },
 
+    setGameFreeChance:function(val){
+        cc.sys.localStorage.setItem(this._dbKey.freechance, val);
+    },
+
+    getGameFreeChance:function(){
+        return cc.sys.localStorage.getItem(this._dbKey.freechance);
+    },
     setGameMoneyBalance:function(val){
         cc.sys.localStorage.setItem(this._dbKey.gamemoney, val);
     },
